@@ -10,5 +10,5 @@ puts calories.max
 
 #Part 2
 calories.sort! {|a, b| b <=> a}
-puts calories[0] + calories[1] + calories[2]
+puts calories.take(3).sum
 

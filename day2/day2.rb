@@ -11,45 +11,6 @@ module RPS
   SECOND_WON = 6
 end
 
-# Part 1
-
-actions = {
-  'A' => RPS::ROCK,
-  'B' => RPS::PAPER,
-  'C' => RPS::SCISSORS,
-  'X' => RPS::ROCK,
-  'Y' => RPS::PAPER,
-  'Z' => RPS::SCISSORS
-}
-
-def get_winner(first, second)
-  if first === second
-    return RPS::TIE
-  end
-
-  if first === RPS::ROCK
-    if second === RPS::PAPER
-      return RPS::SECOND_WON
-    end
-  elsif first === RPS::PAPER
-    if second === RPS::SCISSORS
-      return RPS::SECOND_WON
-    end
-  else
-    if second === RPS::ROCK
-      return RPS::SECOND_WON
-    end
-  end
-  return RPS::FIRST_WON
-end
-
-scores = input.map {|plays|
-  first, second = plays.map {|p| actions[p]}
-  second + get_winner(first, second)
-}
-
-puts scores.sum
-
 wins = {
   RPS::ROCK => RPS::SCISSORS,
   RPS::PAPER => RPS::ROCK,
@@ -61,6 +22,32 @@ loses = {
   RPS::PAPER => RPS::SCISSORS,
   RPS::SCISSORS => RPS::ROCK
 }
+
+# Part 1
+
+actions = {
+  'A' => RPS::ROCK,
+  'B' => RPS::PAPER,
+  'C' => RPS::SCISSORS,
+  'X' => RPS::ROCK,
+  'Y' => RPS::PAPER,
+  'Z' => RPS::SCISSORS
+}
+
+scores = input.map {|plays|
+  first, second = plays.map {|p| actions[p]}
+  if second === first
+    result = RPS::TIE
+  elsif second === loses[first]
+    result = RPS::SECOND_WON
+  else
+    result = RPS::FIRST_WON
+  end
+  second + result 
+}
+puts scores.sum
+
+# Part 2
 
 results = {
   'X' => RPS::FIRST_WON,

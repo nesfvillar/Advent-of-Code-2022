@@ -34,3 +34,17 @@ values = rucksacks.map {|r|
 }
 
 puts values.sum
+
+def find_badge(first, second, third)
+    first.each_char {|u|
+        if second.include?(u) && third.include?(u)
+            return u
+        end
+    }
+end
+
+groups = rucksacks.each_slice(3)
+badges = groups.map {|first, second, third| find_badge(first, second, third)}
+values = badges.map {|b| get_char_value(b)}
+
+puts values.sum

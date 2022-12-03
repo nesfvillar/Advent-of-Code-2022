@@ -16,9 +16,9 @@ def get_compartments(rucksack)
 end
 
 
-def find_common_item(first, second)
+def find_common_item(first, *rest)
     first.each {|u|
-        if second.include? u
+        if rest.all? {|grouping| grouping.include? u}
             return u
         end
     }
@@ -44,18 +44,9 @@ values = rucksacks.map {|r|
 puts values.sum
 
 
-def find_badge(first, second, third)
-    first.each {|u|
-        if second.include?(u) && third.include?(u)
-            return u
-        end
-    }
-end
-
-
 values = rucksacks.each_slice(3).map {|group|
     first, second, third = group.map {|rucksack| string_to_set(rucksack)}
-    badge = find_badge(first, second, third)
+    badge = find_common_item(first, second, third)
     get_char_value(badge)
 }
 

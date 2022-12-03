@@ -1,5 +1,12 @@
+require 'set'
+
 rucksacks = File.read('input.txt').split
 # rucksacks = File.read('test-input.txt').split
+
+
+def string_to_set(str)
+    return str.each_char.to_set
+end
 
 
 def get_compartments(rucksack)
@@ -10,7 +17,7 @@ end
 
 
 def find_common_item(first, second)
-    first.each_char {|u|
+    first.each {|u|
         if second.include? u
             return u
         end
@@ -28,23 +35,28 @@ end
 
 
 values = rucksacks.map {|r| 
-    first, second = get_compartments(r)
+    rucksack = get_compartments(r)
+    first, second = rucksack.map {|compartment| string_to_set(compartment)}
     item = find_common_item(first, second)
     get_char_value(item)
 }
 
 puts values.sum
 
+
 def find_badge(first, second, third)
-    first.each_char {|u|
+    first.each {|u|
         if second.include?(u) && third.include?(u)
             return u
         end
     }
 end
 
-groups = rucksacks.each_slice(3)
-badges = groups.map {|first, second, third| find_badge(first, second, third)}
-values = badges.map {|b| get_char_value(b)}
+
+values = rucksacks.each_slice(3).map {|group|
+    first, second, third = group.map {|rucksack| string_to_set(rucksack)}
+    badge = find_badge(first, second, third)
+    get_char_value(badge)
+}
 
 puts values.sum

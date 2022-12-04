@@ -17,8 +17,8 @@ end
 
 
 def find_common_item(first, *rest)
-    first.each {|u|
-        if rest.all? {|grouping| grouping.include? u}
+    first.each {|u|                                     # For each character u in first
+        if rest.all? {|grouping| grouping.include? u}   # Return if character u is in all the other groups
             return u
         end
     }
@@ -34,20 +34,22 @@ def get_char_value(c)
 end
 
 
+# Part 1
+
 values = rucksacks.map {|r| 
     rucksack = get_compartments(r)
     first, second = rucksack.map {|compartment| string_to_set(compartment)}
     item = find_common_item(first, second)
     get_char_value(item)
 }
-
 puts values.sum
 
+
+# Part 2
 
 values = rucksacks.each_slice(3).map {|group|
     first, second, third = group.map {|rucksack| string_to_set(rucksack)}
     badge = find_common_item(first, second, third)
     get_char_value(badge)
 }
-
 puts values.sum

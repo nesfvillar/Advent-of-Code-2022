@@ -3,13 +3,19 @@ require 'set'
 input = File.read("input.txt")
 # input = File.read("test-input.txt")
 
-def find_marker(str)
-    for d in 3...str.length 
-        a, b, c = d - 3, d - 2, d - 1
-        chars_set = [str[a], str[b], str[c], str[d]].to_set
-        if chars_set.length == 4
-            return d + 1
+def find_marker(str, size)
+    for i in size...str.length
+        indexes = i-size...i
+        chars_set = indexes.map {|j| str[j]}.to_set
+        if chars_set.length == size
+            return i
         end
     end
 end
-puts find_marker(input)
+
+# Part 1
+puts find_marker(input, 4)
+
+
+# Part 2
+puts find_marker(input, 14)

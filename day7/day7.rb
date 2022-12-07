@@ -5,7 +5,7 @@ require 'strscan'
 input = File.read("test-input.txt")
 
 class DirNode
-    attr_reader :name, :parent
+    attr_reader :name, :parent, :children
 
     def initialize(name, parent=nil, children={})
         @name = name
@@ -26,9 +26,11 @@ end
 
 
 class FileNode
-    def initialize(name, weight)
+    attr_reader :name
+    def initialize(name, weight, parent)
         @name = name
         @weight = weight
+        @parent = parent
     end
 
     def get_weight
@@ -41,6 +43,7 @@ class TreeController
     attr_reader :tree
     def initialize(console_out)
         @commands = console_out.scan(/\$.+\n/)
+        @command_results = console_out.split(/\$.+\n/).filter {|op| op != ''}
         @tree = nil
     end
     
@@ -54,11 +57,12 @@ class TreeController
         if command === "cd"
             if option == '..'
                 go_parent()
-            elsif option != '.'
+            else
                 add_dir(option)
             end
         elsif command === "ls"
-
+            results = @command_results.shift.scan(/\d+ \w+.?\w*/).map!(&:split)
+            results.each {|weight, name| add_file(name, weight.to_i)}
         end
         return true
     end
@@ -71,8 +75,8 @@ class TreeController
         @tree = new_dir
     end
 
-    def add_file(weight, name)
-        new_file = FileNode(weight, name, parent=@tree)
+    def add_file(name, weight)
+        new_file = FileNode.new(name, weight, @tree)
         @tree.add_child(new_file)
     end
 
@@ -88,6 +92,7 @@ class TreeController
         return root
     end
 end
+
 
 controller = TreeController.new(input)
 while controller.parse_next_command

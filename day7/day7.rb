@@ -1,5 +1,5 @@
 require 'pp'
-require 'strscan'
+require 'set'
 
 # input = File.read("input.txt")
 input = File.read("test-input.txt")
@@ -22,6 +22,12 @@ class DirNode
     def get_weight
         @children.each_value.sum {|child| child.get_weight}
     end
+
+    def recursive_children
+        queue = @children.each_value.filter {|child| child.class == DirNode}.to_a
+        queue.each {|child| queue.append(*child.recursive_children)}
+        return queue
+    end
 end
 
 
@@ -40,7 +46,6 @@ end
 
 
 class TreeController
-    attr_reader :tree
     def initialize(console_out)
         @commands = console_out.scan(/\$.+\n/)
         @command_results = console_out.split(/\$.+\n/).filter {|op| op != ''}
@@ -91,9 +96,19 @@ class TreeController
         end
         return root
     end
+
+    def get_all_nodes
+        [root()].append *root().recursive_children
+    end
 end
 
 
 controller = TreeController.new(input)
 while controller.parse_next_command
 end
+
+nodes = controller.get_all_nodes.
+    filter {|n| n.get_weight < 100000}
+
+
+p nodes.sum {|n| n.get_weight}

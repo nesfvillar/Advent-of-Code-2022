@@ -22,12 +22,6 @@ class DirNode
     def get_weight
         @children.each_value.sum {|child| child.get_weight}
     end
-
-    def recursive_children
-        queue = @children.each_value.filter {|child| child.class == DirNode}.to_a
-        queue.each {|child| queue.append(*child.recursive_children)}
-        return queue
-    end
 end
 
 
@@ -97,8 +91,13 @@ class TreeController
         return root
     end
 
-    def get_all_nodes
-        [root()].append *root().recursive_children
+    def self.get_result(node, max_weight)
+        child_dirs = node.children.each_value.filter {|child| child.class == DirNode}        
+        if node.get_weight > max_weight
+            return child_dirs.sum {|d| TreeController.get_result(d, max_weight)}
+        else
+            return node.get_weight + child_dirs.sum {|d| TreeController.get_result(d, max_weight)}
+        end
     end
 end
 
@@ -107,8 +106,4 @@ controller = TreeController.new(input)
 while controller.parse_next_command
 end
 
-nodes = controller.get_all_nodes.
-    filter {|n| n.get_weight < 100000}
-
-
-p nodes.sum {|n| n.get_weight}
+p TreeController.get_result(controller.root, 100000)

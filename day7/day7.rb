@@ -4,7 +4,7 @@ require 'strscan'
 # input = File.read("input.txt")
 input = File.read("test-input.txt")
 
-class TreeNode
+class DirNode
     attr_reader :name, :parent
 
     def initialize(name, parent=nil, children={})
@@ -25,17 +25,14 @@ class TreeNode
 end
 
 
-class FileNode < TreeNode
-    def initialize(weight, *args, **kwargs)
+class FileNode
+    def initialize(name, weight)
+        @name = name
         @weight = weight
-        super(*args, **kwargs)
     end
 
     def get_weight
         @weight
-    end
-
-    def add_child(child)
     end
 end
 
@@ -45,7 +42,6 @@ class TreeController
     def initialize(console_out)
         @commands = console_out.scan(/\$.+\n/)
         @tree = nil
-        @current_node = nil
     end
     
     def parse_next_command
@@ -68,7 +64,7 @@ class TreeController
     end
     
     def add_dir(name)
-        new_dir = TreeNode.new(name, parent=@tree)
+        new_dir = DirNode.new(name, parent=@tree)
         unless @tree === nil
             @tree.add_child(new_dir)
         end
@@ -96,4 +92,3 @@ end
 controller = TreeController.new(input)
 while controller.parse_next_command
 end
-

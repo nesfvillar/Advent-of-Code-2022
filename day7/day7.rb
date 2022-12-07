@@ -22,6 +22,20 @@ class DirNode
     def get_weight
         @children.each_value.sum {|child| child.get_weight}
     end
+
+    def map_weights
+        map = {}
+        q = [self]
+        while q.length > 0
+            current_node = q.shift
+            map[current_node] = current_node.get_weight
+
+            child_dirs = current_node.children.each_value.filter {|child| child.class == DirNode}
+            child_dirs.each {|c| q << c unless map.include? c}
+        end
+
+        return map
+    end
 end
 
 
@@ -44,6 +58,9 @@ class TreeController
         @commands = console_out.scan(/\$.+\n/)
         @command_results = console_out.split(/\$.+\n/).filter {|op| op != ''}
         @tree = nil
+
+        while parse_next_command
+        end
     end
     
     def parse_next_command
@@ -90,20 +107,8 @@ class TreeController
         end
         return root
     end
-
-    def self.get_result(node, max_weight)
-        child_dirs = node.children.each_value.filter {|child| child.class == DirNode}        
-        if node.get_weight > max_weight
-            return child_dirs.sum {|d| TreeController.get_result(d, max_weight)}
-        else
-            return node.get_weight + child_dirs.sum {|d| TreeController.get_result(d, max_weight)}
-        end
-    end
 end
 
 
 controller = TreeController.new(input)
-while controller.parse_next_command
-end
-
-p TreeController.get_result(controller.root, 100000)
+p controller.root.map_weights.each_value.filter {|weight| weight < 100000}.sum

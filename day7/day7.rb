@@ -1,7 +1,7 @@
 require 'set'
 
-input = File.read("day7/input.txt")
-input = File.read("test-input.txt")
+input = File.read("input.txt")
+# input = File.read("test-input.txt")
 
 class DirNode
     attr_reader :name, :parent, :children
@@ -108,9 +108,9 @@ class TreeController
     end
 end
 
-
 controller = TreeController.new(input)
 weight_map = controller.root.map_weights
+
 
 # Part 1
 p weight_map.each_value.filter {|weight| weight < 100000}.sum

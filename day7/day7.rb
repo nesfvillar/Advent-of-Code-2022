@@ -1,7 +1,6 @@
-require 'pp'
 require 'set'
 
-# input = File.read("input.txt")
+input = File.read("day7/input.txt")
 input = File.read("test-input.txt")
 
 class DirNode
@@ -111,4 +110,18 @@ end
 
 
 controller = TreeController.new(input)
-p controller.root.map_weights.each_value.filter {|weight| weight < 100000}.sum
+weight_map = controller.root.map_weights
+
+# Part 1
+p weight_map.each_value.filter {|weight| weight < 100000}.sum
+
+
+# Part 2
+TOTAL_SIZE = 70000000
+NEEDED_FREE_SIZE = 30000000
+used_size = controller.root.get_weight
+free_size = TOTAL_SIZE - used_size
+
+valid_nodes = weight_map.each.filter{|node, weight| (free_size + weight) > NEEDED_FREE_SIZE}
+valid_nodes.sort! {|a, b| a[1] <=> b[1]}
+p valid_nodes[0][1]

@@ -24,23 +24,18 @@ class Grid
 
     def get_score(i, j)
         size = get_item(i, j)
+        
+        # Going up and left, it is necessary to reverse the arrays in order to see the trees in order
         r_score = find_right(i, j).take_while {|v| v < size}.count
         u_score = find_up(i, j).reverse.take_while {|v| v < size}.count
         l_score = find_left(i, j).reverse.take_while {|v| v < size}.count
         d_score = find_down(i, j).take_while {|v| v < size}.count
 
-        unless visible_right?(i, j)
-            r_score += 1
-        end
-        unless visible_up?(i, j)
-            u_score += 1
-        end
-        unless visible_left?(i, j)
-            l_score += 1
-        end
-        unless visible_down?(i, j)
-            d_score += 1
-        end
+        # Add the tree that blocks the sight, if there is one
+        r_score += 1 unless visible_right?(i, j)
+        u_score += 1 unless visible_up?(i, j)
+        l_score += 1 unless visible_left?(i, j)
+        d_score += 1 unless visible_down?(i, j)
 
         r_score * u_score * l_score * d_score
     end

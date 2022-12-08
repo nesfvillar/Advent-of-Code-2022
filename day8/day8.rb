@@ -14,12 +14,35 @@ class Grid
 
     def each
         @grid.each_with_index {|row, i| 
-            row.each_with_index {|item, j| yield [item, i, j]}
+            row.each_with_index {|_, j| yield [i, j]}
         }
     end
 
     def visible?(i, j)
         visible_right?(i, j) || visible_up?(i, j) || visible_left?(i, j) || visible_down?(i, j)
+    end
+
+    def get_score(i, j)
+        size = get_item(i, j)
+        r_score = find_right(i, j).take_while {|v| v < size}.count
+        u_score = find_up(i, j).reverse.take_while {|v| v < size}.count
+        l_score = find_left(i, j).reverse.take_while {|v| v < size}.count
+        d_score = find_down(i, j).take_while {|v| v < size}.count
+
+        unless visible_right?(i, j)
+            r_score += 1
+        end
+        unless visible_up?(i, j)
+            u_score += 1
+        end
+        unless visible_left?(i, j)
+            l_score += 1
+        end
+        unless visible_down?(i, j)
+            d_score += 1
+        end
+
+        r_score * u_score * l_score * d_score
     end
 
     def visible_right?(i, j)
@@ -84,4 +107,11 @@ size = input.index(/\n/)
 arr = input.gsub!(/\n/, '').each_char.map(&:to_i)
 
 grid = Grid.new(arr, size)
-p grid.filter {|_, i, j| grid.visible?(i, j)}.count
+
+
+# Part 1 
+p grid.filter {|i, j| grid.visible?(i, j)}.count
+
+
+# Part 2
+p grid.map {|i, j| grid.get_score(i, j)}.max

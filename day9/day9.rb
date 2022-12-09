@@ -7,34 +7,37 @@ class Rope
     attr_reader :visited
     include Enumerable
 
-    def initialize
-        @s = Coord.new(0, 0)
-        @h = Coord.new(0, 0)
-        @t = Coord.new(0, 0)
+    def initialize(n)
+        @rope = [Coord.new(0, 0)] * n
         @visited = Set.new()
     end
 
     def move(dir)
         move_head(dir)
-        move_tail()
+        move_body()
         update_visited()
     end
 
     def move_head(dir)
-        @h += Coord.Directions[dir]
+        @rope[0] += Coord.Directions[dir]
     end
 
-    def move_tail
-        error = @h - @t
-        correction = Rope.MoveTable[error.to_a]
+    def move_body
+        @rope.each_with_index {|_, i| move_part(i) if i > 0}
+    end
 
+    def move_part(i)        
+        a, b = @rope[i-1], @rope[i]
+        error = a - b
+        correction = Rope.MoveTable[error.to_a]
+        
         if correction
-            @t += correction
+            @rope[i] += correction
         end
     end
 
     def update_visited
-        location = @t.to_a
+        location = @rope[-1].to_a
         unless @visited.include? location
             @visited.add location
         end
@@ -53,7 +56,11 @@ class Rope
             [-2, -1] => Coord.Left + Coord.Down,
             [-1,-2] => Coord.Left + Coord.Down,
             [1, -2] => Coord.Right + Coord.Down,
-            [2, -1] => Coord.Right + Coord.Down
+            [2, -1] => Coord.Right + Coord.Down,
+            [2, 2] => Coord.Right + Coord.Up,
+            [-2, 2] => Coord.Left + Coord.Up,
+            [-2, -2] => Coord.Left + Coord.Down,
+            [2, -2] => Coord.Right + Coord.Down,
         }
     end
 end
@@ -107,6 +114,16 @@ class Coord
 end
 
 instructions = input.map {|dir, amount| [dir] * amount.to_i}.flatten!
-r = Rope.new
+
+
+# Part 1
+
+r = Rope.new(2)
 instructions.each {|i| r.move(i)}
-pp r.visited.count
+p r.visited.count
+
+
+# Part 2
+r = Rope.new(10)
+instructions.each {|i| r.move(i)}
+p r.visited.count

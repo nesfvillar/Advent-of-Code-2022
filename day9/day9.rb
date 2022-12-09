@@ -28,40 +28,26 @@ class Rope
 
     def move_part(i)        
         a, b = @rope[i-1], @rope[i]
-        error = a - b
-        correction = Rope.MoveTable[error.to_a]
-        
-        if correction
-            @rope[i] += correction
+        unless a.chebyshev_distance(b) > 1
+            return
+        end
+
+        x, y = (a - b).to_a
+        if x > 0
+            @rope[i] += Coord.Right
+        elsif x < 0
+            @rope[i] += Coord.Left
+        end
+
+        if y > 0
+            @rope[i] += Coord.Up
+        elsif y < 0
+            @rope[i] += Coord.Down
         end
     end
 
     def update_visited
-        location = @rope[-1].to_a
-        unless @visited.include? location
-            @visited.add location
-        end
-    end
-
-    def self.MoveTable
-        {
-            [2, 0] => Coord.Right,
-            [0, 2] => Coord.Up,
-            [-2, 0] => Coord.Left,
-            [0, -2] => Coord.Down,
-            [2, 1] => Coord.Right + Coord.Up,
-            [1, 2] => Coord.Right + Coord.Up,
-            [-1, 2] => Coord.Left + Coord.Up,
-            [-2, 1] => Coord.Left + Coord.Up,
-            [-2, -1] => Coord.Left + Coord.Down,
-            [-1,-2] => Coord.Left + Coord.Down,
-            [1, -2] => Coord.Right + Coord.Down,
-            [2, -1] => Coord.Right + Coord.Down,
-            [2, 2] => Coord.Right + Coord.Up,
-            [-2, 2] => Coord.Left + Coord.Up,
-            [-2, -2] => Coord.Left + Coord.Down,
-            [2, -2] => Coord.Right + Coord.Down,
-        }
+        @visited.add @rope[-1].to_a
     end
 end
 
@@ -84,6 +70,11 @@ class Coord
     
     def -(other)
         Coord.new(@i - other.i, @j - other.j)
+    end
+
+    def chebyshev_distance(other)
+        error = self - other
+        error.map(&:abs).max
     end
     
     def self.Right
